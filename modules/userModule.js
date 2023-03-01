@@ -1,5 +1,6 @@
 const userModel = require("../models/userModel");
 const bcrypt = require("bcrypt");
+const jwt = require("jsonwebtoken");
 
 module.exports.signup = async (req, res) => {
   const { name, email, password } = req.body;
@@ -44,11 +45,14 @@ module.exports.login = async (req, res) => {
       throw new Error("password incorrect");
     }
 
+    const token = jwt.sign({ email, password }, process.env.JWT_KEY);
+
     res.status(200).send({
       name: user.name,
       email: user.email,
       _id: user._id,
       balance: user.balance,
+      token,
     });
   } catch (error) {
     return res.status(400).send(error.message);
@@ -60,11 +64,11 @@ module.exports.update = async (req, res) => {
     const { name, email, id } = req.body;
     const user = await userModel.findByIdAndUpdate(
       { _id: id },
-      { email:email, name:name },
+      { email: email, name: name },
       { returnDocument: "after" }
     );
 
-    res.status(200).send(user)
+    res.status(200).send({ name: user.name, email: user.email });
   } catch (error) {
     res.status(400).send(error.message);
   }

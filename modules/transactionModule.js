@@ -44,7 +44,6 @@ module.exports.deleteTransaction = async (req,res) =>{
     try {
         const transaction = await transactionModel.findByIdAndRemove({_id:id})
         let user = null;
-        console.log(transaction.isCredit)
         if(transaction.isCredit){
          
          user = await userModel.findByIdAndUpdate({_id:transaction.user},{$inc:{balance: -transaction.amount}},{returnDocument: 'after'})
