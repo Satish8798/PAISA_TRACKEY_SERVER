@@ -1,11 +1,10 @@
 const { donate } = require("../modules/donationModule");
 const router = require("express").Router();
-
+const Stripe = require('stripe');
 
 router.post("/add-donation", donate);
 
 router.post('/create-checkout-session', async (req, res)=>{
-    const Stripe = require('stripe');
     const stripe = Stripe(process.env.STRIPE_SK);
     try {
         const session = await stripe.checkout.sessions.create({
